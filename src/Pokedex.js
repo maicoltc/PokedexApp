@@ -1,97 +1,70 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 import {
   Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
   CircularProgress,
   Toolbar,
   AppBar,
   TextField,
-} from "@material-ui/core";
-import { fade, makeStyles } from "@material-ui/core/styles";
-import { toFirstCharUppercase } from "./constants";
-import SearchIcon from "@material-ui/icons/Search";
-import axios from "axios";
+} from '@material-ui/core'
+import { fade, makeStyles } from '@material-ui/core/styles'
+import SearchIcon from '@material-ui/icons/Search'
+
+import { getData } from './api'
+import CardPokemon from './components/CardPokemon'
 
 const useStyles = makeStyles((theme) => ({
   pokedexContainer: {
-    paddingTop: "20px",
-    paddingLeft: "50px",
-    paddingRight: "50px",
+    paddingTop: '20px',
+    paddingLeft: '50px',
+    paddingRight: '50px',
   },
   cardMedia: {
-    margin: "auto",
+    margin: 'auto',
   },
   cardContent: {
-    textAlign: "center",
+    textAlign: 'center',
   },
   searchContainer: {
-    display: "flex",
+    display: 'flex',
     backgroundColor: fade(theme.palette.common.white, 0.15),
-    paddingLeft: "20px",
-    paddingRight: "20px",
-    marginTop: "5px",
-    marginBottom: "5px",
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    marginTop: '5px',
+    marginBottom: '5px',
   },
   searchIcon: {
-    alignSelf: "flex-end",
-    marginBottom: "5px",
+    alignSelf: 'flex-end',
+    marginBottom: '5px',
   },
   searchInput: {
-    width: "200px",
-    margin: "5px",
+    width: '200px',
+    margin: '5px',
   },
-}));
+}))
 
-const Pokedex = (props) => {
-  const classes = useStyles();
-  const { history } = props;
-  const [pokemonData, setPokemonData] = useState({});
-  const [filter, setFilter] = useState("");
+const Pokedex = () => {
+  const classes = useStyles()
+  const [pokemonData, setPokemonData] = useState([])
+  const [pokemonsToShow, setPokemonsToShow] = useState([])
 
   useEffect(() => {
-    axios
-      .get(`https://pokeapi.co/api/v2/pokemon?limit=807`)
-      .then(function (response) {
-        const { data } = response;
-        const { results } = data;
-        const newPokemonData = {};
-        results.forEach((pokemon, index) => {
-          newPokemonData[index + 1] = {
-            id: index + 1,
-            name: pokemon.name,
-            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
-              index + 1
-            }.png`,
-          };
-        });
-        setPokemonData(newPokemonData);
-      });
-  }, []);
+    getData(`https://pokeapi.co/api/v2/pokemon?limit=807`).then((response) => {
+      const { results } = response
+
+      setPokemonData(results)
+      setPokemonsToShow(results)
+    })
+  }, [])
 
   const handleSearchChange = (e) => {
-    setFilter(e.target.value);
-  };
-
-  const getPokemonCard = (pokemonId) => {
-    const { id, name, sprite } = pokemonData[pokemonId];
-    return (
-      <Grid item xs={4} key={pokemonId}>
-        <Card onClick={() => history.push(`/${id}`)}>
-          <CardMedia
-            className={classes.cardMedia}
-            image={sprite}
-            style={{ width: "130px", height: "130px" }}
-          />
-          <CardContent className={classes.cardContent}>
-            <Typography>{`${id}. ${toFirstCharUppercase(name)}`}</Typography>
-          </CardContent>
-        </Card>
-      </Grid>
-    );
-  };
+    const pokemonsFiltered = pokemonData.filter(
+      (pokemon) =>
+        pokemon.name &&
+        pokemon.name.toLowerCase().includes(e.target.value.toLowerCase())
+    )
+    const temp = pokemonsFiltered || pokemonData
+    setPokemonsToShow([...temp])
+  }
 
   return (
     <>
@@ -108,19 +81,17 @@ const Pokedex = (props) => {
           </div>
         </Toolbar>
       </AppBar>
-      {pokemonData ? (
+      {pokemonsToShow ? (
         <Grid container spacing={2} className={classes.pokedexContainer}>
-          {Object.keys(pokemonData).map(
-            (pokemonId) =>
-              pokemonData[pokemonId].name.includes(filter) &&
-              getPokemonCard(pokemonId)
-          )}
+          {pokemonsToShow.map(({ name, url }, index) => (
+            <CardPokemon name={name} url={url} key={`${name}_${index}`} />
+          ))}
         </Grid>
       ) : (
         <CircularProgress />
       )}
     </>
-  );
-};
+  )
+}
 
-export default Pokedex;
+export default Pokedex
