@@ -1,8 +1,7 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts Este Proyecto se realizo con
-[Create React App](https://github.com/facebook/create-react-app).
+## Available Scripts Este Proyecto se realizo con [Create React App](https://github.com/facebook/create-react-app).
 
 In the project directory, you can run:
 
