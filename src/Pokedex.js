@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   Grid,
   CircularProgress,
@@ -8,9 +9,8 @@ import {
 } from '@material-ui/core'
 import { fade, makeStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
-
-import { getData } from './api'
 import CardPokemon from './components/CardPokemon'
+import { fetchPokemons } from './state/pokemons/pokemonsReducer'
 
 const useStyles = makeStyles((theme) => ({
   pokedexContainer: {
@@ -44,17 +44,19 @@ const useStyles = makeStyles((theme) => ({
 
 const Pokedex = () => {
   const classes = useStyles()
-  const [pokemonData, setPokemonData] = useState([])
-  const [pokemonsToShow, setPokemonsToShow] = useState([])
+  const dispatch = useDispatch()
+  const pokemons = useSelector((state) => state.pokemons.pokemons)
+  const [pokemonData, setPokemonData] = useState(pokemons)
+  const [pokemonsToShow, setPokemonsToShow] = useState(pokemons)
 
   useEffect(() => {
-    getData(`https://pokeapi.co/api/v2/pokemon?limit=807`).then((response) => {
-      const { results } = response
+    setPokemonData(pokemons)
+    setPokemonsToShow(pokemons)
+  }, [pokemons])
 
-      setPokemonData(results)
-      setPokemonsToShow(results)
-    })
-  }, [])
+  useEffect(() => {
+    dispatch(fetchPokemons())
+  }, [dispatch])
 
   const handleSearchChange = (e) => {
     const pokemonsFiltered = pokemonData.filter(
