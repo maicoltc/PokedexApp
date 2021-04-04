@@ -3,9 +3,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts Este Proyecto se realizo con [Create React App](https://github.com/facebook/create-react-app).
 
-In the project directory, you can run:
+##  La pagina desplegada se puede ver en el siguiente link: https://unruffled-leakey-e4ddb8.netlify.app
 
-### `yarn start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
